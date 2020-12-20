@@ -14,8 +14,11 @@
   (call-with-input-file file-name
     (λ (in)
       (for/list ([line (in-lines in)]
-                 #:when (not (= (string-length line) 0)))
+                 #:when (not-empty? line))
         (string->list line)))))
+
+(define (not-empty? line)
+  (not (= (string-length line) 0)))
 
 ;Tests
 (check-equal? (count-questions '("a" "b" "c")) 3)
