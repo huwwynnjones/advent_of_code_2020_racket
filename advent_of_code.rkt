@@ -18,5 +18,6 @@
 
 (displayln "Day 6 part 1")
 (define day-6-input (day-6-load-input-file "day_6.txt"))
-(define day-6-answer (count-all-groups-questions day-6-input))
-(displayln (format "Answer is ~a" day-6-answer))
+(displayln (format "Answer is ~a" (count-all-groups-questions day-6-input 'no-dups)))
+(displayln "Day 6 part 2")
+(displayln (format "Answer is ~a" (count-all-groups-questions day-6-input 'intersect)))

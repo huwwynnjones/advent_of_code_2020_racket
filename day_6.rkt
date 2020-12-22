@@ -14,13 +14,23 @@
     (for/list ([q questions])
       (string->list q)))))
 
-(define (count-group-questions group)
-  (count-questions
-   (convert-to-chars-no-duplicates group)))
+(define (convert-to-chars-intersect questions)
+  (apply
+   set-intersect
+   (for/list ([q questions])
+     (string->list q))))
 
-(define (count-all-groups-questions groups)
+(define (count-group-questions group conversion-method)
+  (count-questions
+   (cond
+     [(eq? conversion-method 'no-dups)
+      (convert-to-chars-no-duplicates group)]
+     [(eq? conversion-method 'intersect)
+      (convert-to-chars-intersect group)])))
+
+(define (count-all-groups-questions groups conversion-method)
   (for/sum ([group groups])
-    (count-group-questions group)))
+    (count-group-questions group conversion-method)))
 
 (define (extend old new)
   (foldr cons (list new) old))
@@ -43,7 +53,7 @@
 
 ;Tests
 (check-equal? (count-questions '("a" "b" "c")) 3)
-(check-equal? (count-group-questions '("ab" "ac")) 3)
+(check-equal? (count-group-questions '("ab" "ac") 'no-dups) 3)
 (check-equal? (load-input-file
                "day_6_test.txt")
               '(("abc")
@@ -53,5 +63,7 @@
                 ("b")))
 (define test-groups
   (load-input-file "day_6_test.txt"))
-(check-equal? (count-all-groups-questions test-groups) 11)
+(check-equal? (count-all-groups-questions test-groups 'no-dups) 11)
+(check-equal? (count-all-groups-questions test-groups 'intersect) 6)
+(check-equal? (convert-to-chars-intersect '("ab" "ac")) (string->list "a"))
                   
