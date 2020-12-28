@@ -2,11 +2,15 @@
 
 (require rackunit)
 
+(provide count-bags
+         load-input-file)
+
 (define (split-text text)
   (if (third-bag-section? text)
       (list (first-bag text)
-            (list (second-bag text)
-                  (third-bag text)))
+            (append
+             (list (second-bag text))
+             (other-bags text)))
       (list (first-bag text)
             (list (second-bag text)))))
 
@@ -25,12 +29,14 @@
         '()
         (list (string->number number) (string-join (list hue colour))))))
 
-(define (third-bag text)
-  (let* ([third-bag-section (string-split (second (string-split text ",")))]
-         [number (first third-bag-section)]
-         [hue (second third-bag-section)]
-         [colour (third third-bag-section)])
-    (list (string->number number) (string-join (list hue colour)))))
+(define (other-bags text)
+  (let ([other-bags-section (cdr (string-split text ","))])
+    (for/list ([bags other-bags-section])
+      (let* ([bag (string-split bags)]
+             [number (first bag)]
+             [hue (second bag)]
+             [colour (third bag)])
+        (list (string->number number) (string-join (list hue colour)))))))
 
 (define (third-bag-section? text)
   (string-contains? text ","))
@@ -47,20 +53,44 @@
 (define (create-bag-map lines)
   (make-hash (create-bag-rule-pairs lines)))
 
+(define (count-bags bags-map colour)
+  (count (λ (c) (not (equal? c colour)))
+         (remove-duplicates
+          (flatten
+           (find-all-bags bags-map colour)))))
+
+(define (find-all-bags bags-map colour)
+  (list colour
+        (for/list ([bag (find-bags-held bags-map colour)])
+          (find-all-bags bags-map bag))))
+
+(define (find-bags-held bags-map colour)
+    (flatten (hash-map bags-map (lambda (k v)
+                                  (if (member colour (flatten v)) k null)))))
+
 
 ;Tests
 (define test-rule "light red bags contain 1 bright white bag, 2 muted yellow bags.")
+(define four-bag-rule "dark tomato bags contain 1 posh teal bag, 1 posh lavender bag, 5 dim cyan bags, 4 light yellow bags.")
 (check-equal? (split-text test-rule)
               (list "light red" (list (list 1 "bright white")
                                       (list 2 "muted yellow"))))
+(check-equal? (split-text four-bag-rule)
+              (list "dark tomato" (list (list 1 "posh teal")
+                                        (list 1 "posh lavender")
+                                        (list 5 "dim cyan")
+                                        (list 4 "light yellow"))))
 (check-equal? (split-text "faded blue bags contain no other bags.")
               (list "faded blue" (list '())))
 (check-equal? (first-bag test-rule)
               "light red")
 (check-equal? (second-bag test-rule)
               '(1 "bright white"))
-(check-equal? (third-bag test-rule)
-              '(2 "muted yellow"))
+(check-equal? (other-bags
+               four-bag-rule)
+              '((1 "posh lavender")
+                (5 "dim cyan")
+                (4 "light yellow")))
 (check-equal? (third-bag-section? test-rule) #t)
 (check-equal? (third-bag-section? "bright white bags contain 1 shiny gold bag.") #f)
 (define test-bags
@@ -76,3 +106,5 @@
               (list "dotted black" '(())))))
 (check-equal? (load-input-file "day_7_test.txt")
               test-bags)
+(check-equal? (count-bags test-bags "shiny gold") 4)
+
