@@ -3,6 +3,7 @@
 (require rackunit)
 
 (provide count-bags
+         count-all-bags
          load-input-file)
 
 (define (split-text text)
@@ -40,7 +41,7 @@
 
 (define (third-bag-section? text)
   (string-contains? text ","))
-    
+
 (define (load-input-file filename)
   (call-with-input-file filename
     (λ (in)
@@ -65,9 +66,24 @@
           (find-all-bags bags-map bag))))
 
 (define (find-bags-held bags-map colour)
-    (flatten (hash-map bags-map (lambda (k v)
-                                  (if (member colour (flatten v)) k null)))))
+  (flatten (hash-map bags-map (lambda (k v)
+                                (if (member colour (flatten v)) k null)))))
 
+(define (count-all-bags bags-map colour)
+  (let ([bags (list-of-bags-inside bags-map colour)])
+    (for/sum ([bag bags])
+      (if (empty? bag)
+          0
+          (let ([bag-count (car bag)]
+                [child-bag-count
+                 (count-all-bags bags-map (cadr bag))])
+            (if (= child-bag-count 0)
+                bag-count
+                (+ bag-count (* bag-count child-bag-count))))))))
+
+(define (list-of-bags-inside bags-map colour)
+  (car (hash-ref bags-map colour)))
+  
 
 ;Tests
 (define test-rule "light red bags contain 1 bright white bag, 2 muted yellow bags.")
@@ -107,4 +123,4 @@
 (check-equal? (load-input-file "day_7_test.txt")
               test-bags)
 (check-equal? (count-bags test-bags "shiny gold") 4)
-
+(check-equal? (count-all-bags test-bags "shiny gold") 32)

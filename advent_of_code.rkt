@@ -26,3 +26,5 @@
 (displayln "Day 7 part 1")
 (define day-7-input (day-7-load-input-file "day_7.txt"))
 (displayln (format "Answer is ~a" (count-bags day-7-input "shiny gold")))
+(displayln "Day 7 part 2")
+(displayln (format "Answer is ~a" (count-all-bags day-7-input "shiny gold")))
