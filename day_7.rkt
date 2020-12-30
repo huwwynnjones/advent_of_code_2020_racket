@@ -70,20 +70,19 @@
                                 (if (member colour (flatten v)) k null)))))
 
 (define (count-all-bags bags-map colour)
-  (let ([bags (list-of-bags-inside bags-map colour)])
-    (for/sum ([bag bags])
-      (if (empty? bag)
-          0
-          (let ([bag-count (car bag)]
-                [child-bag-count
-                 (count-all-bags bags-map (cadr bag))])
-            (if (= child-bag-count 0)
-                bag-count
-                (+ bag-count (* bag-count child-bag-count))))))))
+  (for/sum ([bag (list-of-bags-inside bags-map colour)])
+    (if (empty? bag)
+        0
+        (let ([bag-count (car bag)]
+              [child-bag-count
+               (count-all-bags bags-map (cadr bag))])
+          (if (= child-bag-count 0)
+              bag-count
+              (+ bag-count (* bag-count child-bag-count)))))))
 
 (define (list-of-bags-inside bags-map colour)
   (car (hash-ref bags-map colour)))
-  
+
 
 ;Tests
 (define test-rule "light red bags contain 1 bright white bag, 2 muted yellow bags.")
