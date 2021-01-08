@@ -2,6 +2,9 @@
 
 (require rackunit)
 
+(provide run-program
+         load-input-file)
+
 (define (string->op-pair str)
   (let ([str-list (string-split str)])
     (cons (string->op-symbol (car str-list))

@@ -3,7 +3,8 @@
 (require "day_1.rkt"
          (rename-in "day_5.rkt" [load-input-file day-5-load-input-file])
          (rename-in "day_6.rkt" [load-input-file day-6-load-input-file])
-	 (rename-in "day_7.rkt" [load-input-file day-7-load-input-file]))
+	 (rename-in "day_7.rkt" [load-input-file day-7-load-input-file])
+	 (rename-in "day_8.rkt" [load-input-file day-8-load-input-file]))
 
 (displayln "Day 1 part 1")
 (define input (load-input-file "day_1.txt"))
@@ -22,9 +23,13 @@
 (displayln (format "Answer is ~a" (count-all-groups-questions day-6-input 'no-dups)))
 (displayln "Day 6 part 2")
 (displayln (format "Answer is ~a" (count-all-groups-questions day-6-input 'intersect)))
-
+n
 (displayln "Day 7 part 1")
 (define day-7-input (day-7-load-input-file "day_7.txt"))
 (displayln (format "Answer is ~a" (count-bags day-7-input "shiny gold")))
 (displayln "Day 7 part 2")
 (displayln (format "Answer is ~a" (count-all-bags day-7-input "shiny gold")))
+
+(displayln "Day 8 part 1")
+(define day-8-input (day-8-load-input-file "day_8.txt"))
+(displayln (format "Answer is ~a" (run-program day-8-input)))
