@@ -20,8 +20,21 @@
         (string->op-pair line)))))
 
 (define (run-program program)
-  5)
-
+  (for/fold ([sum 0]
+             [ptr 0]
+             [used-instructions null]
+            #:result sum)
+            ([op-pair program])
+    #:break (member ptr used-instructions)
+    (let* ([current (list-ref program ptr)]
+           [op (car current)]
+           [value (cdr current)])
+      (match op
+        ['nop (values sum (+ ptr 1) (append used-instructions (list ptr)))]
+        ['jmp (values sum (+ ptr value) (append used-instructions (list ptr)))]
+        ['acc (values (+ sum value) (+ ptr 1) (append used-instructions (list ptr)))]))))
+      
+    
 ; Tests
 (test-case
     "Read string into op pair"
